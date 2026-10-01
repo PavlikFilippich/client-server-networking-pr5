@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS Test Client</title>
+    <style>
+        body { font-family: system-ui, sans-serif; padding: 2rem; max-width: 600px; }
+        .box { margin-top: 1rem; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        .error { color: #d32f2f; font-weight: bold; }
+        .success { color: #2e7d32; font-weight: bold; }
+    </style>
+</head>
+<body>
+<h2>Практичне дослідження CORS</h2>
+<p>Цей клієнт робить GET-запит на <b>http://localhost:3000/api/data</b></p>
+
+<button id="fetchBtn">Виконати запит</button>
+
+<div class="box">
+    <b>Статус: </b> <span id="statusText">Очікування...</span><br><br>
+    <b>Результат: </b> <span id="resultData">-</span>
+</div>
+
+<script>
+    document.getElementById('fetchBtn').addEventListener('click', async () => {
+        const statusText = document.getElementById('statusText');
+        const resultData = document.getElementById('resultData');
+
+        statusText.textContent = 'Виконується запит...';
+        statusText.className = '';
+        resultData.textContent = '-';
+
+        try {
+            const response = await fetch('http://localhost:3000/api/data');
+
+            if (!response.ok) {
+                throw new Error(`HTTP помилка! Статус: ${response.status}`);
+            }
+
+            const data = await response.json();
+            statusText.textContent = 'Успіх!';
+            statusText.className = 'success';
+            resultData.textContent = JSON.stringify(data);
+            console.log('✅ Відповідь від сервера:', data);
+
+        } catch (error) {
+            statusText.textContent = 'Помилка (деталі в консолі F12)';
+            statusText.className = 'error';
+            resultData.textContent = 'Дані не отримано. Ймовірно, запит заблоковано політикою CORS.';
+            console.error('❌ Помилка виконання запиту:', error.message);
+            console.error('Зверніть увагу на помилку CORS вище ☝️');
+        }
+    });
+</script>
+</body>
+</html>
